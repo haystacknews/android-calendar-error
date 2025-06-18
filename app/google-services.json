@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652360060605",
+    "project_id": "hs-test-50ebc",
+    "storage_bucket": "hs-test-50ebc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652360060605:android:aec5a59a3eff478ecbb1d4",
+        "android_client_info": {
+          "package_name": "com.example.arturocalendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtJvGUsOb8CKtiy9c9Tb2-E9WJpcqXTQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
