@@ -36,10 +36,17 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
 
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(platform(libs.androidx.compose.bom))
