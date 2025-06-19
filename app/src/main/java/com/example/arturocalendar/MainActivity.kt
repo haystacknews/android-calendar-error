@@ -1,10 +1,6 @@
 package com.example.arturocalendar
 
-import android.app.Activity
-import android.app.PendingIntent
-import android.content.Intent
 import android.content.IntentSender
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -12,18 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.tv.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.lifecycle.lifecycleScope
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
 import com.example.arturocalendar.ui.theme.MyApplicationTheme
@@ -31,11 +21,7 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.Scope
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.api.services.calendar.CalendarScopes
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     
@@ -43,8 +29,6 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    val credentialManager = CredentialManager.create(this)
-    
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { 
         result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
@@ -52,18 +36,18 @@ class MainActivity : ComponentActivity() {
                     .getAuthorizationResultFromIntent(result.data)
                 handleCalendarAccess(authorizationResult)
             } else {
-                Log.d(TAG, "Authorization failed. Result code: $result. Details: ${result.data}")
+                Log.d(TAG, "Authorization failed. Result code: ${result.resultCode}")
+                Log.d(TAG, "Intent data: ${result.data}")
+                result.data?.extras?.let { extras ->
+                    for (key in extras.keySet()) {
+                        Log.d(TAG, "Extra: $key = ${extras.get(key)}")
+                    }
+                }
             }
     }
     
     @OptIn(ExperimentalTvMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(true)
-            .setServerClientId("127662802395-0llqborkr87bfmbuufibrl98qp1nbsc8.apps.googleusercontent.com")
-            .setAutoSelectEnabled(true)
-        .build()
-
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
@@ -76,50 +60,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-
-        val request: GetCredentialRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        lifecycleScope.launch {
-            try {
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = this@MainActivity,
-                )
-
-                val credential = result.credential
-
-                if (credential is CustomCredential) {
-                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                        try {
-                            // Use googleIdTokenCredential and extract the ID to validate and
-                            // authenticate on your server.
-                            val googleIdTokenCredential = GoogleIdTokenCredential
-                                .createFrom(credential.data)
-
-                            Log.d(TAG, "got token: $googleIdTokenCredential")
-
-                            // Request calendar permissions
-                            requestCalendarPermissions()
-                        } catch (e: GoogleIdTokenParsingException) {
-                            Log.e(TAG, "Received an invalid google id token response", e)
-                        }
-                    } else {
-                        // Catch any unrecognized custom credential type here.
-                        Log.e(TAG, "Unexpected type of credential")
-                    }
-                }
-            } catch (e: GetCredentialException) {
-                Log.d(TAG, "sign in error: $e")
-            }
-        }
+        requestCalendarPermissions()
     }
-    
+
     private fun requestCalendarPermissions() {
-        val requestedScopes = listOf(Scope(CalendarScopes.CALENDAR_READONLY))
+        val requestedScopes = listOf(Scope(CalendarScopes.CALENDAR_EVENTS_READONLY))
         val authorizationRequest = AuthorizationRequest.builder()
             .setRequestedScopes(requestedScopes)
+            .requestOfflineAccess("127662802395-0llqborkr87bfmbuufibrl98qp1nbsc8.apps.googleusercontent.com")
             .build()
             
         Identity.getAuthorizationClient(this)
@@ -152,7 +100,7 @@ class MainActivity : ComponentActivity() {
     
     private fun handleCalendarAccess(authorizationResult: AuthorizationResult) {
         // Handle successful calendar access here
-        Log.d(TAG, "Calendar access granted successfully")
+        Log.d(TAG, "Calendar access granted successfully! ${authorizationResult.serverAuthCode}")
         // You can now make Calendar API calls
     }
     

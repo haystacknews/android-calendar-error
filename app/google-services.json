@@ -12,7 +12,12 @@
           "package_name": "com.example.arturocalendar"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "652360060605-1blangre7vlkfvkje4j6rut7mv93cfv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCtJvGUsOb8CKtiy9c9Tb2-E9WJpcqXTQI"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652360060605-1blangre7vlkfvkje4j6rut7mv93cfv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
