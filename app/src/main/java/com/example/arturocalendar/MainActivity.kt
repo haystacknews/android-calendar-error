@@ -67,7 +67,8 @@ class MainActivity : ComponentActivity() {
         val requestedScopes = listOf(Scope(CalendarScopes.CALENDAR_EVENTS_READONLY))
         val authorizationRequest = AuthorizationRequest.builder()
             .setRequestedScopes(requestedScopes)
-            .requestOfflineAccess("127662802395-0llqborkr87bfmbuufibrl98qp1nbsc8.apps.googleusercontent.com")
+            // use WEB client id, not android one
+            .requestOfflineAccess("127662802395-9vdovnh12hbqvgnd3n4c5qkmk6kbl2h9.apps.googleusercontent.com")
             .build()
             
         Identity.getAuthorizationClient(this)
